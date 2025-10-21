@@ -230,115 +230,85 @@ export default function PhotoCaroussel() {
   const gapVarStyle = { ["--gap-x"]: "8px" };
 
   // ====== RETURN MOBILE ======
-  if (isMobile) {
-    const MOBILE_VISIBLE = 3;
+if (isMobile) {
+  const MOBILE_VISIBLE = 3;
 
-    const mobileItemClasses = [
-      "relative overflow-hidden",
-      "aspect-[2/3]", // ratio réel 832x1248
-      "rounded-md",
-      "bg-transparent",
-      "select-none",
-    ].join(" ");
-
-    // 3 colonnes visibles → 2 gaps
-    const mobileItemStyle = {
-      flex: "0 0 calc((100% - (var(--gap-x) * 2)) / 3)",
-    };
-    const mobileGapClass = "gap-2";
-    const mobileGapVarStyle = { ["--gap-x"]: "8px" };
-
-    return (
-      <section
-        aria-label="Carrousel photos produits (mobile)"
-        className="w-screen py-4 bg-slate-50 overflow-hidden"
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={endMouseDrag}
-        onMouseLeave={endMouseDrag}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <div className="relative max-w-none bg-transparent">
-          <div ref={viewportRef} className="overflow-hidden bg-transparent">
+  return (
+    <section
+      aria-label="Carrousel photos produits (mobile)"
+      className="w-full bg-slate-50 overflow-hidden py-2"
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={endMouseDrag}
+      onMouseLeave={endMouseDrag}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      <div ref={viewportRef} className="overflow-hidden">
+        <div
+          ref={trackRef}
+          className="flex flex-nowrap items-stretch select-none cursor-grab active:cursor-grabbing"
+          style={{ gap: "4px", transform: `translateX(${-offsetPx}px)` }}
+        >
+          {trackItems.map((src, i) => (
             <div
-              ref={trackRef}
-              className={`flex flex-nowrap items-stretch select-none cursor-grab active:cursor-grabbing bg-transparent ${mobileGapClass}`}
-              style={{
-                ...mobileGapVarStyle,
-                transform: `translateX(${-offsetPx}px)`,
-                transition: "transform 0s linear",
-                willChange: "transform",
-              }}
+              key={`${src}-${i}`}
+              ref={i === 0 ? itemRef : null}
+              className="relative shrink-0 overflow-hidden aspect-[2/3] rounded"
+              style={{ flex: "0 0 calc((100% - 8px) / 3)" }} // 2 gaps * 4px
+              onMouseUp={() => handleImagePointerUp(src)}
+              onTouchEnd={() => handleImagePointerUp(src)}
             >
-              {trackItems.map((src, i) => (
-                <div
-                  key={`${src}-${i}`}
-                  className={mobileItemClasses}
-                  style={mobileItemStyle}
-                  ref={i === 0 ? itemRef : null}
-                  onMouseUp={() => handleImagePointerUp(src)}
-                  onTouchEnd={() => handleImagePointerUp(src)}
-                >
-                  <img
-                    src={src}
-                    alt={`Photo ${(i % total) + 1}`}
-                    draggable={false}
-                    className="absolute inset-0 h-full w-full object-contain bg-transparent"
-                    loading={i < MOBILE_VISIBLE * 3 ? "eager" : "lazy"}
-                    decoding="async"
-                    fetchpriority={i < MOBILE_VISIBLE * 3 ? "high" : "auto"}
-                  />
-                </div>
-              ))}
+              <img
+                src={src}
+                alt={`Photo ${(i % total) + 1}`}
+                draggable={false}
+                className="block h-full w-full object-contain"
+                loading={i < MOBILE_VISIBLE * 3 ? "eager" : "lazy"}
+                decoding="async"
+                fetchpriority={i < MOBILE_VISIBLE * 3 ? "high" : "auto"}
+              />
             </div>
-          </div>
+          ))}
         </div>
+      </div>
 
-        {lightboxSrc && (
-          <div
-            className="fixed inset-0 z-[999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => {
-              setIsPaused(false);
-              setLightboxSrc(null);
-            }}
-          >
-            <div
-              className="relative w-full max-w-[92vw]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="pointer-events-none absolute inset-0 z-20">
-                <button
-                  type="button"
-                  aria-label="Fermer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsPaused(false);
-                    setLightboxSrc(null);
-                  }}
-                  className="pointer-events-auto absolute right-3 top-3 h-10 w-10 rounded-full bg-black/75 text-white shadow-lg flex items-center justify-center transition-transform duration-200 ease-out hover:scale-110 hover:rotate-12 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/60"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </div>
+      {lightboxSrc && (
+  <div
+    className="fixed inset-0 z-[999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+    onClick={() => { setIsPaused(false); setLightboxSrc(null); }}
+  >
+    <div
+      className="relative w-full max-w-[92vw] pointer-events-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        aria-label="Fermer"
+        className="absolute right-3 top-3 h-10 w-10 rounded-full bg-black/75 text-white flex items-center justify-center transition-transform hover:scale-110 hover:rotate-12 z-[1000] pointer-events-auto"
+        onClick={(e) => { e.stopPropagation(); setIsPaused(false); setLightboxSrc(null); }}
+        onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); setIsPaused(false); setLightboxSrc(null); }}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
 
-              <figure className="relative w-full overflow-hidden rounded-2xl shadow-2xl bg-black/20">
-                <img
-                  src={lightboxSrc}
-                  alt="Agrandissement"
-                  className="w-full h-auto max-h-[75vh] object-contain"
-                  draggable={false}
-                />
-              </figure>
-            </div>
-          </div>
-        )}
-      </section>
-    );
-  }
+      <figure className="relative w-full overflow-hidden rounded-2xl shadow-2xl bg-black/20">
+        <img
+          src={lightboxSrc}
+          alt="Agrandissement"
+          className="w-full h-auto max-h-[75vh] object-contain select-none"
+          draggable={false}
+        />
+      </figure>
+    </div>
+  </div>
+)}
+    </section>
+  );
+}
 
   // ====== RETURN DESKTOP ======
   return (
