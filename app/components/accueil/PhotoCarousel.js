@@ -3,8 +3,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 /**
  * PhotoCaroussel — défilement continu infini + drag + lightbox
  * - Défilement continu droite→gauche (1 image / 3 s)
- * - 7 vignettes visibles (aspect ~8/7) desktop
- * - 3 vignettes visibles mobile, hauteur max calculée
+ * - 7 vignettes visibles desktop (aspect ~8/7)
+ * - 3 vignettes visibles mobile (aspect 2/3), hauteur auto
  * - Drag souris/tactile pour accélérer/inverser
  * - Clic sur une image => arrêt + lightbox
  * - Boucle infinie SANS discontinuité
@@ -97,38 +97,18 @@ export default function PhotoCaroussel() {
     baseSpeedPxPerMsRef.current = step / INTERVAL_MS_PER_IMAGE;
   };
 
-  const setMobileViewportHeight = () => {
-    if (!viewportRef.current) return;
-    const vw = window.visualViewport?.width || window.innerWidth;
-    const gapFromTrack = trackRef.current
-      ? parseFloat(getComputedStyle(trackRef.current).getPropertyValue("--gap-x")) || 8
-      : 8; // 2 gaps pour 3 colonnes
-    const cols = 3;
-    const itemW = (vw - 2 * gapFromTrack) / cols;
-    const h = itemW * (3 / 4); // aspect-[4/3]
-    viewportRef.current.style.height = `${Math.max(120, Math.round(h))}px`;
-  };
-
   useEffect(() => {
     computeMetrics();
     const ro = new ResizeObserver(() => {
       computeMetrics();
-      if (isMobile) setMobileViewportHeight();
     });
     if (viewportRef.current) ro.observe(viewportRef.current);
     if (trackRef.current) ro.observe(trackRef.current);
     if (itemRef.current) ro.observe(itemRef.current);
-
-    const onResize = () => isMobile && setMobileViewportHeight();
-    window.addEventListener("resize", onResize);
-
-    if (isMobile) setMobileViewportHeight();
-
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", onResize);
     };
-  }, [isMobile]);
+  }, []);
 
   useEffect(() => {
     if (total > 0 && itemWidthRef.current > 0) {
@@ -247,7 +227,7 @@ export default function PhotoCaroussel() {
 
   const itemStyle = { flex: "0 0 calc((100% - (var(--gap-x) * 6)) / 7)" };
   const gapClass = "gap-2 sm:gap-3";
-  const gapVarStyle = { ["--gap-x"] : "8px" };
+  const gapVarStyle = { ["--gap-x"]: "8px" };
 
   // ====== RETURN MOBILE ======
   if (isMobile) {
@@ -255,7 +235,7 @@ export default function PhotoCaroussel() {
 
     const mobileItemClasses = [
       "relative overflow-hidden",
-      "aspect-[4/3]", // ratio mobile
+      "aspect-[2/3]", // ratio réel 832x1248
       "rounded-md",
       "shadow-[0_6px_18px_rgba(0,0,0,0.18)]",
       "bg-transparent",
@@ -263,9 +243,11 @@ export default function PhotoCaroussel() {
     ].join(" ");
 
     // 3 colonnes visibles → 2 gaps
-    const mobileItemStyle = { flex: "0 0 calc((100% - (var(--gap-x) * 2)) / 3)" };
+    const mobileItemStyle = {
+      flex: "0 0 calc((100% - (var(--gap-x) * 2)) / 3)",
+    };
     const mobileGapClass = "gap-2";
-    const mobileGapVarStyle = { ["--gap-x"] : "8px" };
+    const mobileGapVarStyle = { ["--gap-x"]: "8px" };
 
     return (
       <section
@@ -304,7 +286,7 @@ export default function PhotoCaroussel() {
                     src={src}
                     alt={`Photo ${(i % total) + 1}`}
                     draggable={false}
-                    className="absolute inset-0 h-full w-full object-cover bg-transparent"
+                    className="absolute inset-0 h-full w-full object-contain bg-transparent"
                     loading={i < MOBILE_VISIBLE * 3 ? "eager" : "lazy"}
                     decoding="async"
                     fetchpriority={i < MOBILE_VISIBLE * 3 ? "high" : "auto"}
