@@ -237,7 +237,6 @@ export default function PhotoCaroussel() {
       "relative overflow-hidden",
       "aspect-[2/3]", // ratio réel 832x1248
       "rounded-md",
-      "shadow-[0_6px_18px_rgba(0,0,0,0.18)]",
       "bg-transparent",
       "select-none",
     ].join(" ");
@@ -345,7 +344,7 @@ export default function PhotoCaroussel() {
   return (
     <section
       aria-label="Carrousel photos produits"
-      className="w-screen py-4 bg-slate-50 overflow-hidden"
+      className="w-full py-4 bg-slate-50 overflow-hidden"
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={endMouseDrag}
