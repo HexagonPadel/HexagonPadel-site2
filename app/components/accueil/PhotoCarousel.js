@@ -267,7 +267,7 @@ if (isMobile) {
                 className="block h-full w-full object-contain"
                 loading={i < MOBILE_VISIBLE * 3 ? "eager" : "lazy"}
                 decoding="async"
-                fetchpriority={i < MOBILE_VISIBLE * 3 ? "high" : "auto"}
+                fetchPriority={i < MOBILE_VISIBLE * 3 ? "high" : "auto"}
               />
             </div>
           ))}
@@ -351,7 +351,7 @@ if (isMobile) {
                   className="absolute inset-0 h-full w-full object-cover bg-transparent"
                   loading="eager"
                   decoding="async"
-                  fetchpriority={i < total ? "high" : "auto"}
+                  fetchPriority={i < total ? "high" : "auto"}
                 />
               </div>
             ))}

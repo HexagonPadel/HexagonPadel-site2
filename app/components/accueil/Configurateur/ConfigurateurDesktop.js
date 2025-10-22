@@ -21,8 +21,8 @@ import {
    ========================================== */
 
 function ThumbItem({ item, active, onClick }) {
-  const borderClass = active 
-    ? "border-amber-500 ring-1 ring-amber-500" 
+  const borderClass = active
+    ? "border-amber-500 ring-1 ring-amber-500"
     : "border-slate-200";
 
   return (
@@ -34,11 +34,11 @@ function ThumbItem({ item, active, onClick }) {
       title={item.alt}
     >
       {item.type === "image" ? (
-        <img 
-          src={item.src} 
-          alt={item.alt} 
-          className="h-full w-full object-cover" 
-          loading="lazy" 
+        <img
+          src={item.src}
+          alt={item.alt}
+          className="h-full w-full object-cover"
+          loading="lazy"
         />
       ) : (
         <video
@@ -48,27 +48,28 @@ function ThumbItem({ item, active, onClick }) {
           playsInline
           preload="metadata"
           onMouseEnter={(e) => e.currentTarget.play()}
-          onMouseLeave={(e) => { 
-            try { 
-              e.currentTarget.pause(); 
-              e.currentTarget.currentTime = 0; 
-            } catch {} 
+          onMouseLeave={(e) => {
+            try {
+              e.currentTarget.pause();
+              e.currentTarget.currentTime = 0;
+            } catch {}
           }}
+          onError={(e) => console.error("thumb video error:", item.src, e)}
         >
-          <source src={item.src} type="video/mp4" />
+          <source src={item.src} />
         </video>
       )}
     </button>
   );
 }
 
-function PreviewGallery({ items }) {
+function PreviewGallery({ items = [] }) {
   const [idx, setIdx] = useState(0);
 
   // zoom/pan
-  const [zoom, setZoom] = useState(1);              // 1 ou 3
-  const [tx, setTx] = useState(0);                  // translation X (px)
-  const [ty, setTy] = useState(0);                  // translation Y (px)
+  const [zoom, setZoom] = useState(1);
+  const [tx, setTx] = useState(0);
+  const [ty, setTy] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [start, setStart] = useState({ x: 0, y: 0, tx0: 0, ty0: 0 });
   const [pressXY, setPressXY] = useState({ x: 0, y: 0 });
@@ -78,17 +79,28 @@ function PreviewGallery({ items }) {
 
   useEffect(() => {
     setIdx(0);
-    // reset zoom/pan quand la liste change
     setZoom(1); setTx(0); setTy(0);
   }, [items]);
 
+  if (!items.length) {
+    return (
+      <div className="flex h-full w-full flex-col">
+        <div className="relative flex-1 rounded-2xl bg-slate-50 border border-slate-200 grid place-items-center">
+          <span className="text-xs text-slate-500">Aucun média disponible</span>
+        </div>
+      </div>
+    );
+  }
+
+  // clamp d’index
+  const safeIdx = Math.max(0, Math.min(idx, items.length - 1));
+  const current = items[safeIdx];
+
   const prev = () => { setIdx((i) => (i + items.length - 1) % items.length); resetZoom(); };
   const next = () => { setIdx((i) => (i + 1) % items.length); resetZoom(); };
-  const current = items[idx];
 
   const resetZoom = () => { setZoom(1); setTx(0); setTy(0); };
 
-  // bornes max de pan en fonction du conteneur et du zoom
   const clampPan = (nx, ny) => {
     const r = containerRef.current?.getBoundingClientRect();
     if (!r) return { x: 0, y: 0 };
@@ -100,25 +112,18 @@ function PreviewGallery({ items }) {
     };
   };
 
-  // au clic : toggle zoom. Si on passe en x3, on centre sur la zone cliquée.
   const handleClick = (e) => {
-    // ignorer si on a réellement drag
     if (moved) { setMoved(false); return; }
-
     const r = containerRef.current?.getBoundingClientRect();
     if (!r) return;
 
     if (zoom === 1) {
       const s = 3;
-      const px = e.clientX - r.left; // pos clic dans le conteneur
+      const px = e.clientX - r.left;
       const py = e.clientY - r.top;
-
-      // calcul de la translation qui centre le point cliqué
-      // formule simple: décalage nécessaire = (0.5 - px/cw) * (s-1)*cw
       const nx = (0.5 - px / r.width) * (s - 1) * r.width;
       const ny = (0.5 - py / r.height) * (s - 1) * r.height;
       const clamped = clampPan(nx, ny);
-
       setZoom(3);
       setTx(clamped.x);
       setTy(clamped.y);
@@ -128,7 +133,7 @@ function PreviewGallery({ items }) {
   };
 
   const handleMouseDown = (e) => {
-    if (zoom === 1) return; // pas de pan en x1
+    if (zoom === 1) return;
     e.preventDefault();
     setDragging(true);
     setStart({ x: e.clientX, y: e.clientY, tx0: tx, ty0: ty });
@@ -150,7 +155,6 @@ function PreviewGallery({ items }) {
 
   const endDrag = () => setDragging(false);
 
-  // wheel facultatif: petit pan vertical/horizontal quand zoomé
   const handleWheel = (e) => {
     if (zoom === 1) return;
     e.preventDefault();
@@ -158,7 +162,6 @@ function PreviewGallery({ items }) {
     setTx(x); setTy(y);
   };
 
-  // styles utilitaires
   const mediaTransform = `translate(${tx}px, ${ty}px) scale(${zoom})`;
   const cursorClass =
     zoom === 1
@@ -181,7 +184,6 @@ function PreviewGallery({ items }) {
         role="figure"
         aria-label="Aperçu produit avec zoom"
       >
-        {/* Média principal avec transform */}
         {current.type === "image" ? (
           <img
             src={current.src}
@@ -199,34 +201,34 @@ function PreviewGallery({ items }) {
             loop
             playsInline
             autoPlay
+            onError={(e) => console.error("main video error:", current.src, e)}
           >
-            <source src={current.src} type="video/mp4" />
+            <source src={current.src} />
           </video>
         )}
 
-        {/* flèches de navigation */}
         <button
-  type="button"
-  onClick={(e) => { e.stopPropagation(); prev(); }}
-  onMouseDown={(e) => e.stopPropagation()}
-  aria-label="Précédent"
-  className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
->
-  ‹
-</button>
+          type="button"
+          onClick={(e) => { e.stopPropagation(); prev(); }}
+          onMouseDown={(e) => e.stopPropagation()}
+          aria-label="Précédent"
+          className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
+        >
+          ‹
+        </button>
 
-<button
-  type="button"
-  onClick={(e) => { e.stopPropagation(); next(); }}
-  onMouseDown={(e) => e.stopPropagation()}
-  aria-label="Suivant"
-  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
->
-  ›
-</button>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); next(); }}
+          onMouseDown={(e) => e.stopPropagation()}
+          aria-label="Suivant"
+          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
+        >
+          ›
+        </button>
 
         <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] rounded-full bg-white/80 px-2 py-0.5 border text-slate-700">
-          {idx + 1} / {items.length} {zoom === 3 ? "• x3" : ""}
+          {safeIdx + 1} / {items.length} {zoom === 3 ? "• x3" : ""}
         </div>
       </div>
 
@@ -238,7 +240,7 @@ function PreviewGallery({ items }) {
           <ThumbItem
             key={`${it.type}-${it.src}`}
             item={it}
-            active={i === idx}
+            active={i === safeIdx}
             onClick={() => { setIdx(i); resetZoom(); }}
           />
         ))}
@@ -279,21 +281,17 @@ export default function ConfigurateurDesktop({
 
       <div className="mx-auto max-w-7xl px-4">
         <div className="grid gap-8 lg:grid-cols-2">
-          
           {/* COLONNE GAUCHE : PRÉVISUALISATION */}
           <aside
             className="col-span-1 sticky"
-            style={{
-              top: "100px",
-              height: "85vh",
-            }}
+            style={{ top: "100px", height: "85vh" }}
           >
             <div className="h-full w-full rounded-3xl border border-slate-200 bg-white shadow-sm p-4 ">
               <PreviewGallery items={previewItems} />
             </div>
-            
+
             <p className="mb-2 text-xs italic text-slate-500">
-              En raison de la diversité des combinaisons, les rendus affichés sont à titre illustratif. 
+              En raison de la diversité des combinaisons, certains rendus affichés sont à titre illustratif.
               Chaque raquette fabriquée reprend les mêmes nuances, reflets et textures que celles présentées.
             </p>
           </aside>
@@ -301,7 +299,6 @@ export default function ConfigurateurDesktop({
           {/* COLONNE DROITE : OPTIONS */}
           <div className="col-span-1">
             <div className="flex flex-col space-y-6">
-              
               {/* SECTION PERFORMANCE */}
               <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div className="px-4 py-3 border-b border-slate-200">
@@ -309,7 +306,7 @@ export default function ConfigurateurDesktop({
                     Performance
                   </h3>
                   <p className="mt-1 text-xs leading-snug text-slate-600">
-                    Choisissez votre type de jeu : nous fabriquons votre raquette avec les meilleurs matériaux pour s&#39;y adapter naturellement. 
+                    Choisissez votre type de jeu : nous fabriquons votre raquette avec les meilleurs matériaux pour s&#39;y adapter naturellement.
                   </p>
                 </div>
 
@@ -433,19 +430,19 @@ export default function ConfigurateurDesktop({
                         <span className="block">Couleur de la</span>
                         <span className="block">surface de frappe</span>
                       </h3>
-                      
+
                       <div className="flex-1 flex items-center justify-end gap-2 flex-nowrap">
                         {FINISH_TABS.map(tab => {
                           const isDisabled = tab.id !== "brut" && !isDecorationAllowed;
                           const isSelected = finish === tab.id;
-                          
+
                           return (
                             <div key={tab.id} className="relative group">
                               <button
                                 onClick={() => isDecorationAllowed && setFinish(tab.id)}
                                 className={`shrink-0 inline-flex items-center justify-center rounded-full border ${tabBtnTightClass(tab.id)} text-[10px] leading-tight text-center ${
                                   isSelected
-                                    ? "bg-amber-100 border-amber-300 font-semibold" 
+                                    ? "bg-amber-100 border-amber-300 font-semibold"
                                     : isDisabled
                                     ? "border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed opacity-50"
                                     : "border-slate-300 hover:bg-slate-100 cursor-pointer"
@@ -454,7 +451,7 @@ export default function ConfigurateurDesktop({
                               >
                                 <span className="leading-tight">{tab.label}</span>
                               </button>
-                              
+
                               {isDisabled && (
                                 <div className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 translate-y-1 group-hover:block">
                                   <div className="mt-2 max-w-[240px] rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] text-slate-700 shadow whitespace-nowrap">
@@ -474,7 +471,7 @@ export default function ConfigurateurDesktop({
                           const selected = accentColor === c.id;
                           const imgSrc = COLOR_IMAGE(finish, c.id);
                           const isDisabled = !isDecorationAllowed;
-                          
+
                           return (
                             <div key={`${finish}-${c.id}`} className="relative group">
                               <button
@@ -487,10 +484,10 @@ export default function ConfigurateurDesktop({
                                 <div className={`relative w-24 aspect-square overflow-hidden rounded-md ${
                                   selected ? "ring-2 ring-amber-500" : ""
                                 }`}>
-                                  <img 
-                                    src={imgSrc} 
-                                    alt={`Aperçu ${finish} — ${c.name}`} 
-                                    className="absolute inset-0 h-full w-full object-cover" 
+                                  <img
+                                    src={imgSrc}
+                                    alt={`Aperçu ${finish} — ${c.name}`}
+                                    className="absolute inset-0 h-full w-full object-cover"
                                   />
                                 </div>
                                 <span className={`w-24 text-center truncate ${
@@ -528,8 +525,8 @@ export default function ConfigurateurDesktop({
                               key={l.id}
                               onClick={() => setLogoColor(l.id)}
                               className={`shrink-0 rounded-full border px-3 py-1 text-[11px] cursor-pointer ${
-                                selected 
-                                  ? "bg-amber-100 border-amber-300 font-semibold" 
+                                selected
+                                  ? "bg-amber-100 border-amber-300 font-semibold"
                                   : "border-slate-300 bg-white hover:border-slate-400"
                               }`}
                               aria-pressed={selected}
@@ -562,12 +559,11 @@ export default function ConfigurateurDesktop({
                       </div>
                     </div>
                   </section>
-
                 </div>
               </div>
 
               <p className="text-xs italic text-slate-500">
-                Si vous souhaitez une décoration non disponible dans le configurateur,&nbsp;
+                Si vous souhaitez une décoration non disponible dans le configurateur,&nbsp;demandez-la nous{" "}
                 <a
                   href="/contact"
                   className="font-semibold italic border-b border-slate-500 pb-[1px] hover:text-sky-600 hover:border-sky-600 transition-colors"

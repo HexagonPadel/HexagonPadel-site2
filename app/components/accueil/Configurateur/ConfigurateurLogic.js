@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 /* ==========================================
    CONFIGURATION & DONNÉES
@@ -14,7 +14,7 @@ export const SURFACES = [
   { id: "mc",  label: "Tamis 100% fibres de carbone recyclées non tissées" },
   { id: "cc",  label: "Tamis fibres de carbone recyclées non tissées, renforcé de fins torons de carbone 12K" },
   { id: "fc",  label: "Tamis fibres de carbone recyclées non tissées, renforcé de larges lames de carbone 12K. Le modèle le plus puissant." },
-  { id: "lin", label: "Tamis hybride fibre de carbone / fibre de lin naturel" },
+  { id: "lin", label: "Tamis hybride fibre de carbone / fibre de lin naturel. La fibre de lin est plus souple que la fibre de carbone" },
 ];
 
 export const PALETTE = [
@@ -62,26 +62,45 @@ export const surfaceLabel = (id) => SURFACES.find(s => s.id === id)?.label ?? id
 export const colorName = (id) => PALETTE.find(c => c.id === id)?.name ?? id;
 export const styleLabel = (id) => STYLES.find(s => s.id === id)?.label ?? id;
 
-export const SURFACE_VIDEO = (id) => `/configurateur/options/${id}.mov`;
-export const COLOR_VIDEO = (group, colorId) => `/configurateur/options/${group}_${colorId}.mov`;
-export const RAW_VIDEO = () => `/configurateur/options/fibres_brute.mov`;
 export const SURFACE_IMAGE = (id) => `/configurateur/options/${id}.png`;
 export const COLOR_IMAGE = (group, colorId) => `/configurateur/options/${group}_${colorId}.png`;
 
-export const GALLERY_IMAGES = ({ surface, finish, accentColor }) => {
-  if (finish === "brut" || !accentColor) {
-    return [1, 2, 3].map(n => `/configurateur/tamis/${surface}/${n}.png`);
-  }
-  return [1, 2, 3].map(n => `/configurateur/tamis/${surface}/${finish}/${accentColor}/${n}.png`);
-};
-
 export const tabBtnTightClass = (id) =>
-  id === "brut" || id === "paillettes" 
-    ? "px-[6px] py-[5px] min-w-[64px]" 
+  id === "brut" || id === "paillettes"
+    ? "px-[6px] py-[5px] min-w-[64px]"
     : "px-2.5 py-[6px] min-w-[90px]";
 
 /* ==========================================
-   HOOK PERSONNALISÉ POUR LA LOGIQUE
+   GESTION DES MÉDIAS SIMPLIFIÉE
+   ========================================== */
+
+/**
+ * 3 images fixes + 1 vidéo "debo.mov" toujours présente.
+ */
+export async function fetchGallery(surface, finish, accentColor) {
+  const base =
+    finish === "brut" || !accentColor
+      ? `/configurateur/tamis/${surface}/`
+      : `/configurateur/tamis/${surface}/${finish}/${accentColor}/`;
+
+  const images = [1, 2, 3].map((n, i) => ({
+    type: "image",
+    src: `${base}${n}.png`,
+    alt: `Image ${i + 1} – ${surface} – ${finish}`,
+  }));
+
+  const video = {
+    type: "video",
+    src: `${base}demo.mov`,
+    mime: "video/quicktime",
+    alt: `Vidéo démonstration – ${surface} – ${finish}`,
+  };
+
+  return [...images, video];
+}
+
+/* ==========================================
+   HOOK PRINCIPAL
    ========================================== */
 
 export function useConfigurateur() {
@@ -91,24 +110,16 @@ export function useConfigurateur() {
   const [finish, setFinish] = useState("brut");
   const [logoColor, setLogoColor] = useState("logo-tricolore");
   const [engraving, setEngraving] = useState("");
+  const [previewItems, setPreviewItems] = useState([]);
 
-  // Synchronisation style -> surface compatible
   useEffect(() => {
     setSurface(prev => {
-      if (styleJeu === "offensif") {
-        const allowed = new Set(COMPAT.offensif);
-        return allowed.has(prev) ? prev : "";
-      }
-      
       const allowed = COMPAT[styleJeu] || [];
-      if (!prev || !allowed.includes(prev)) {
-        return allowed[0] || prev;
-      }
+      if (!prev || !allowed.includes(prev)) return allowed[0] || prev;
       return prev;
     });
   }, [styleJeu]);
 
-  // Force finition brute pour surfaces fc/lin
   useEffect(() => {
     if (surface && SURFACES_BRUT_ONLY.includes(surface)) {
       setFinish("brut");
@@ -116,12 +127,25 @@ export function useConfigurateur() {
     }
   }, [surface]);
 
-  // Reset couleur lors du changement de finition
-  useEffect(() => {
-    if (finish !== "brut") setAccentColor("");
-  }, [finish]);
+// Charger les médias selon surface / finition / couleur
+useEffect(() => {
+  const effSurface = surface || "mc";
+  const effFinish = finish === "brut" || !accentColor ? "brut" : finish;
 
-  // Handler : clic sur une surface (même grisée)
+  // 🔍 Ajoute ici le log pour vérifier le chemin et les fichiers trouvés
+  fetchGallery(effSurface, effFinish, accentColor).then((arr) => {
+    console.log({
+      effSurface,
+      effFinish,
+      accentColor,
+      arr, // ← tu verras la liste complète des images/vidéos dans la console navigateur
+    });
+    setPreviewItems(arr);
+  });
+}, [surface, finish, accentColor]);
+
+  const isDecorationAllowed = !surface || !SURFACES_BRUT_ONLY.includes(surface);
+
   const handleSurfaceClick = (sId, allowed) => {
     if (!allowed) {
       const newStyle = SURFACE_TO_STYLE[sId] || styleJeu;
@@ -130,57 +154,21 @@ export function useConfigurateur() {
     setSurface(sId);
   };
 
-  // Construction des items de prévisualisation
-  const effectiveSurface = surface || "mc";
-  const effectiveFinishForPreview = finish === "brut" || !accentColor ? "brut" : finish;
-
-  const previewItems = useMemo(() => {
-    const photos = GALLERY_IMAGES({
-      surface: effectiveSurface,
-      finish: effectiveFinishForPreview,
-      accentColor,
-    }).map((src, i) => ({
-      type: "image",
-      src,
-      alt: `Aperçu ${effectiveSurface} – ${effectiveFinishForPreview}${
-        effectiveFinishForPreview === "brut" ? "" : ` – ${accentColor}`
-      } – ${i + 1}`,
-    }));
-
-    const surfaceItem = { 
-      type: "video", 
-      src: SURFACE_VIDEO(effectiveSurface), 
-      alt: `Vidéo surface — ${surfaceLabel(effectiveSurface)}` 
-    };
-
-    const aestheticItem = effectiveFinishForPreview === "brut"
-      ? { type: "video", src: RAW_VIDEO(), alt: "Vidéo — Brut" }
-      : { type: "video", src: COLOR_VIDEO(finish, accentColor), alt: `Vidéo ${finish} — ${colorName(accentColor)}` };
-
-    return [...photos, surfaceItem, aestheticItem];
-  }, [effectiveSurface, effectiveFinishForPreview, finish, accentColor]);
-
-  const isDecorationAllowed = !surface || !SURFACES_BRUT_ONLY.includes(surface);
-
   return {
-    // États
     styleJeu,
     surface,
     accentColor,
     finish,
     logoColor,
     engraving,
-    // Setters
+    previewItems,
     setStyleJeu,
     setSurface,
     setAccentColor,
     setFinish,
     setLogoColor,
     setEngraving,
-    // Computed
-    previewItems,
     isDecorationAllowed,
-    // Handlers
     handleSurfaceClick,
   };
 }
