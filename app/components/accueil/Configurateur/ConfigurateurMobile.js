@@ -166,8 +166,8 @@ export default function ConfigurateurMobile({
         </div>
 
         <p className="mt-2 text-[10px] italic text-slate-500">
-          Les rendus sont illustratifs. Chaque raquette reprend les mêmes
-          nuances et textures.
+        En raison de la diversité des combinaisons, certains rendus affichés sont à titre illustratif. 
+        Chaque raquette fabriquée reprend les mêmes nuances, reflets et textures que celles présentées.
         </p>
       </div>
 

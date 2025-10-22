@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   STYLES,
   SURFACES,
@@ -64,68 +64,182 @@ function ThumbItem({ item, active, onClick }) {
 
 function PreviewGallery({ items }) {
   const [idx, setIdx] = useState(0);
-  
-  useEffect(() => { setIdx(0); }, [items]);
-  
-  const prev = () => setIdx((i) => (i + items.length - 1) % items.length);
-  const next = () => setIdx((i) => (i + 1) % items.length);
+
+  // zoom/pan
+  const [zoom, setZoom] = useState(1);              // 1 ou 3
+  const [tx, setTx] = useState(0);                  // translation X (px)
+  const [ty, setTy] = useState(0);                  // translation Y (px)
+  const [dragging, setDragging] = useState(false);
+  const [start, setStart] = useState({ x: 0, y: 0, tx0: 0, ty0: 0 });
+  const [pressXY, setPressXY] = useState({ x: 0, y: 0 });
+  const [moved, setMoved] = useState(false);
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    setIdx(0);
+    // reset zoom/pan quand la liste change
+    setZoom(1); setTx(0); setTy(0);
+  }, [items]);
+
+  const prev = () => { setIdx((i) => (i + items.length - 1) % items.length); resetZoom(); };
+  const next = () => { setIdx((i) => (i + 1) % items.length); resetZoom(); };
   const current = items[idx];
+
+  const resetZoom = () => { setZoom(1); setTx(0); setTy(0); };
+
+  // bornes max de pan en fonction du conteneur et du zoom
+  const clampPan = (nx, ny) => {
+    const r = containerRef.current?.getBoundingClientRect();
+    if (!r) return { x: 0, y: 0 };
+    const maxX = (zoom - 1) * r.width / 2;
+    const maxY = (zoom - 1) * r.height / 2;
+    return {
+      x: Math.max(-maxX, Math.min(maxX, nx)),
+      y: Math.max(-maxY, Math.min(maxY, ny)),
+    };
+  };
+
+  // au clic : toggle zoom. Si on passe en x3, on centre sur la zone cliquée.
+  const handleClick = (e) => {
+    // ignorer si on a réellement drag
+    if (moved) { setMoved(false); return; }
+
+    const r = containerRef.current?.getBoundingClientRect();
+    if (!r) return;
+
+    if (zoom === 1) {
+      const s = 3;
+      const px = e.clientX - r.left; // pos clic dans le conteneur
+      const py = e.clientY - r.top;
+
+      // calcul de la translation qui centre le point cliqué
+      // formule simple: décalage nécessaire = (0.5 - px/cw) * (s-1)*cw
+      const nx = (0.5 - px / r.width) * (s - 1) * r.width;
+      const ny = (0.5 - py / r.height) * (s - 1) * r.height;
+      const clamped = clampPan(nx, ny);
+
+      setZoom(3);
+      setTx(clamped.x);
+      setTy(clamped.y);
+    } else {
+      resetZoom();
+    }
+  };
+
+  const handleMouseDown = (e) => {
+    if (zoom === 1) return; // pas de pan en x1
+    e.preventDefault();
+    setDragging(true);
+    setStart({ x: e.clientX, y: e.clientY, tx0: tx, ty0: ty });
+    setPressXY({ x: e.clientX, y: e.clientY });
+    setMoved(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragging || zoom === 1) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    if (!moved && (Math.abs(e.clientX - pressXY.x) > 3 || Math.abs(e.clientY - pressXY.y) > 3)) {
+      setMoved(true);
+    }
+    const { x, y } = clampPan(start.tx0 + dx, start.ty0 + dy);
+    setTx(x);
+    setTy(y);
+  };
+
+  const endDrag = () => setDragging(false);
+
+  // wheel facultatif: petit pan vertical/horizontal quand zoomé
+  const handleWheel = (e) => {
+    if (zoom === 1) return;
+    e.preventDefault();
+    const { x, y } = clampPan(tx - e.deltaX, ty - e.deltaY);
+    setTx(x); setTy(y);
+  };
+
+  // styles utilitaires
+  const mediaTransform = `translate(${tx}px, ${ty}px) scale(${zoom})`;
+  const cursorClass =
+    zoom === 1
+      ? "cursor-zoom-in"
+      : dragging
+      ? "cursor-grabbing"
+      : "cursor-grab";
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="relative flex-1 overflow-hidden rounded-2xl bg-slate-50 border border-slate-200">
+      <div
+        ref={containerRef}
+        className={`relative flex-1 overflow-hidden rounded-2xl bg-slate-50 border border-slate-200 select-none ${cursorClass}`}
+        onClick={handleClick}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={endDrag}
+        onMouseLeave={endDrag}
+        onWheel={handleWheel}
+        role="figure"
+        aria-label="Aperçu produit avec zoom"
+      >
+        {/* Média principal avec transform */}
         {current.type === "image" ? (
-          <img 
-            src={current.src} 
-            alt={current.alt} 
-            className="h-full w-full object-cover" 
-            loading="eager" 
+          <img
+            src={current.src}
+            alt={current.alt}
+            className="h-full w-full object-cover will-change-transform"
+            style={{ transform: mediaTransform, transformOrigin: "center center", transition: dragging ? "none" : "transform 120ms ease" }}
+            draggable={false}
           />
         ) : (
-          <video 
-            key={current.src} 
-            className="h-full w-full object-cover" 
-            muted 
-            loop 
-            playsInline 
+          <video
+            key={current.src}
+            className="h-full w-full object-cover will-change-transform"
+            style={{ transform: mediaTransform, transformOrigin: "center center", transition: dragging ? "none" : "transform 120ms ease" }}
+            muted
+            loop
+            playsInline
             autoPlay
           >
             <source src={current.src} type="video/mp4" />
           </video>
         )}
-        
-        <button 
-          type="button" 
-          onClick={prev} 
-          aria-label="Précédent" 
-          className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
-        >
-          ‹
-        </button>
-        <button 
-          type="button" 
-          onClick={next} 
-          aria-label="Suivant" 
-          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
-        >
-          ›
-        </button>
-        
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] rounded-full bg-white/80 px-2 py-0.5 border text-slate-700">
-          {idx + 1} / {items.length}
+
+        {/* flèches de navigation */}
+        <button
+  type="button"
+  onClick={(e) => { e.stopPropagation(); prev(); }}
+  onMouseDown={(e) => e.stopPropagation()}
+  aria-label="Précédent"
+  className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
+>
+  ‹
+</button>
+
+<button
+  type="button"
+  onClick={(e) => { e.stopPropagation(); next(); }}
+  onMouseDown={(e) => e.stopPropagation()}
+  aria-label="Suivant"
+  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
+>
+  ›
+</button>
+
+        <div className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 text-[11px] rounded-full bg-white/80 px-2 py-0.5 border text-slate-700">
+          {idx + 1} / {items.length} {zoom === 3 ? "• x3" : ""}
         </div>
       </div>
 
-      <div 
-        className="mt-3 grid gap-2" 
+      <div
+        className="mt-3 grid gap-2"
         style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
       >
         {items.map((it, i) => (
-          <ThumbItem 
-            key={`${it.type}-${it.src}`} 
-            item={it} 
-            active={i === idx} 
-            onClick={() => setIdx(i)} 
+          <ThumbItem
+            key={`${it.type}-${it.src}`}
+            item={it}
+            active={i === idx}
+            onClick={() => { setIdx(i); resetZoom(); }}
           />
         ))}
       </div>
