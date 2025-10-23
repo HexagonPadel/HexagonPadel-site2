@@ -272,7 +272,7 @@ export default function ConfigurateurDesktop({
   handleSurfaceClick,
 }) {
   return (
-    <section className="py-10 bg-slate-50 mx-8">
+    <section className="py-10 bg-slate-50 mx-8 mb-8">
       <div className="max-w-6xl mx-auto px-4 mb-6">
         <h2 className="text-3xl font-bold mb-2">Configurez votre propre raquette</h2>
         <p className="text-gray-600 max-w-xl">

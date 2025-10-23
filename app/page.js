@@ -3,8 +3,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import { useRef } from "react";
 import Hero from "./components/accueil/Hero";
+
 import PhotoCarousel from "./components/accueil/PhotoCarousel";
+
 import Configurateur from "./components/accueil/Configurateur";
+import TechnicalSpecs from "./components/accueil/Configurateur/TechnicalSpecs";
+import PictosPropValeur from "./components/accueil/PictosPropValeur";
 import PrecommandeEmail from "./components/accueil/PrecommandeEmail";
 import ModelesPhares from "./components/accueil/ModelesPhares";
 import Reassurance from "./components/Reassurance";
@@ -27,12 +31,14 @@ export default function Home() {
   return (
     <main className="scroll-smooth">
       <Hero onScrollToConfigurator={scrollToConfigurator} />
+     <PictosPropValeur />
       <PhotoCarousel />
 
       {/* Ancre du configurateur */}
       <div ref={configurateurRef}>
         <Configurateur />
       </div>
+      <TechnicalSpecs />
 
       {/* Ancre de la section précommande */}
       <div id="precommandeemail" ref={precommandeRef}  className="scroll-mt-[100px]">

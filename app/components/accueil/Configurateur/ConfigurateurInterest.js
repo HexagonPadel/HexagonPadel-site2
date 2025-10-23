@@ -104,7 +104,7 @@ Couleur     : ${config.accentColor ? colorName(config.accentColor) : "—"}`,
         <button
           type="submit"
           disabled={isSubmitting}
-          className="sm:ml-3 w-full sm:w-auto rounded-md bg-black text-white px-4 py-2 font-medium hover:bg-neutral-800 disabled:opacity-60"
+          className="sm:ml-3 w-full sm:w-auto rounded-md bg-copper-light text-white px-4 py-2 font-medium hover:bg-neutral-800 disabled:opacity-60"
         >
           {isSubmitting ? "Envoi…" : "Je veux cette raquette"}
         </button>
