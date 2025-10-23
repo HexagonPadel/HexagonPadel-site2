@@ -15,6 +15,7 @@ import {
   COLOR_IMAGE,
   tabBtnTightClass,
 } from "./ConfigurateurLogic";
+import ConfigurateurInterest from "./ConfigurateurInterest";
 
 /* ==========================================
    COMPOSANTS UI
@@ -572,6 +573,18 @@ export default function ConfigurateurDesktop({
                 </a>
                 &nbsp;!
               </p>
+
+{/* === Section d’intérêt configurateur === */}
+<ConfigurateurInterest
+  config={{
+    styleJeu,
+    surface,
+    accentColor,
+    finish,
+    logoColor,
+    engraving,
+  }}
+/>
 
               <div className="flex-1" />
             </div>

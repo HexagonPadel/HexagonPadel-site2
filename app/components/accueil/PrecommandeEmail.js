@@ -18,10 +18,8 @@ export default function PrecommandeEmail() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: 'ContactConfigurateur',
           email,
-          message: email, // corps = l’adresse email
-          subject: 'inscription à newsletter Hexagon Padel',
+          subject: 'Nouvel onboarding',
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -40,7 +38,7 @@ export default function PrecommandeEmail() {
       <div className="max-w-4xl mx-auto text-center px-4">
         <h2 className="text-3xl font-bold mb-6">Rejoignez les pionniers Hexagon Padel !</h2>
         <p className="text-gray-400 leading-tight text-l mb-8">
-        Soyez informé de la sortie officielle, profiter des offres de lancement et tester nos raquettes en avant-première.
+        Soyez informé de la sortie officielle, profitez des offres de lancement et testez nos raquettes en avant-première.
         </p>
 
         {ok && <p className="mb-4 text-green-400">{ok}</p>}
