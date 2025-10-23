@@ -52,37 +52,50 @@ function ThumbItemMobile({ item, active, onClick }) {
   );
 }
 
-function PreviewGalleryMobile({ items }) {
+function PreviewGalleryMobile({ items = [] }) {
   const [idx, setIdx] = useState(0);
+  const len = Array.isArray(items) ? items.length : 0;
+  const safeIdx = Math.min(idx, Math.max(0, len - 1));
+  const current = len ? items[safeIdx] : null;
   useEffect(() => {
     setIdx(0);
-  }, [items]);
+  }, [len]);
 
-  const prev = () => setIdx((i) => (i + items.length - 1) % items.length);
-  const next = () => setIdx((i) => (i + 1) % items.length);
-  const current = items[idx];
+  const prev = () => setIdx((i) => (len ? (i + len - 1) % len : 0));
+  const next = () => setIdx((i) => (len ? (i + 1) % len : 0));
+  
+
+  if (!len) {
+    return (
+      <div className="flex flex-col w-full">
+        <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-slate-50 border border-slate-200 grid place-items-center">
+          <span className="text-xs text-slate-500">Aucun média disponible</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col w-full">
       {/* Image principale carrée */}
       <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-white border border-slate-200">
-        {current.type === "image" ? (
+        {current?.type === "image" ? (
           <img
-            src={current.src}
-            alt={current.alt}
+            src={current?.src}
+            alt={current?.alt}
             className="h-full w-full object-contain object-center bg-white"
             loading="eager"
           />
         ) : (
           <video
-            key={current.src}
+            key={current?.src}
             className="h-full w-full object-contain object-center bg-black"
             muted
             loop
             playsInline
             autoPlay
           >
-            <source src={current.src} type="video/mp4" />
+            <source src={current?.src} type="video/mp4" />
           </video>
         )}
 
@@ -113,17 +126,17 @@ function PreviewGalleryMobile({ items }) {
       <div
         className="mt-2 grid gap-1.5"
         style={{
-          gridTemplateColumns: `repeat(${Math.min(items.length, 4)}, minmax(0, 1fr))`,
+          gridTemplateColumns: `repeat(${Math.min(len, 4)}, minmax(0, 1fr))`,
         }}
       >
-        {items.slice(0, 4).map((it, i) => (
-          <ThumbItemMobile
-            key={`${it.type}-${it.src}`}
-            item={it}
-            active={i === idx}
-            onClick={() => setIdx(i)}
-          />
-        ))}
+{items.slice(0, 4).map((it, i) => (
+  <ThumbItemMobile
+    key={`${it?.type || "media"}-${it?.src || i}`}
+    item={it}
+    active={i === safeIdx}
+    onClick={() => setIdx(i)}
+  />
+))}
       </div>
     </div>
   );
@@ -163,7 +176,7 @@ export default function ConfigurateurMobile({
       {/* PRÉVISUALISATION */}
       <div className="mb-6">
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-3">
-          <PreviewGalleryMobile items={previewItems} />
+        <PreviewGalleryMobile items={previewItems || []} />
         </div>
 
         <p className="mt-2 text-[10px] italic text-slate-500">
