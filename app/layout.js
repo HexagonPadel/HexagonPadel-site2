@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CookieConsent from "./components/CookieConsent";
 import Popup from "./components/accueil/Popup"; // ← ajout
+
 
 
 export default function RootLayout({ children }) {
