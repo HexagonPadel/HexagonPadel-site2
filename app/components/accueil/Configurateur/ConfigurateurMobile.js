@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ConfigurateurInterest from "./ConfigurateurInterest";
 import {
   STYLES,
   SURFACES,
@@ -423,6 +424,19 @@ export default function ConfigurateurMobile({
           </a>
           &nbsp;!
         </p>
+        {/* === Section d’intérêt configurateur (mobile) === */}
+<div className="mt-4">
+  <ConfigurateurInterest
+    config={{
+      styleJeu,
+      surface,
+      accentColor,
+      finish,
+      logoColor,
+      engraving,
+    }}
+  />
+</div>
       </div>
     </section>
   );
