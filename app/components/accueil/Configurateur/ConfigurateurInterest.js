@@ -111,7 +111,7 @@ Couleur     : ${config.accentColor ? colorName(config.accentColor) : "—"}`,
       </form>
 
       <p className="mt-2 text-xs text-neutral-500 text-center sm:text-left">
-        Vous serez recontacté en avant-première et bénéficierez d'une offre exclusive de lancement.
+        Vous serez recontacté en avant-première et bénéficierez d&#39;une offre exclusive de lancement.
       </p>
     </section>
   );
