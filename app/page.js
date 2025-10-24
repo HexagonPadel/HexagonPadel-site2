@@ -1,5 +1,4 @@
 "use client";
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import { useRef } from "react";
 import Hero from "./components/accueil/Hero";
@@ -19,8 +18,7 @@ import "../app/globals.css";
 import RemplacementTamis from "./components/RemplacementTamis";
 import Explications from "./components/Explications";
 import HistoireRapide from "./components/accueil/HistoireRapide";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/next"
+
 
 export default function Home() {
   const configurateurRef = useRef(null);
