@@ -1,15 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import { Wrench, ShieldCheck } from "lucide-react";
 
-/* Icône drapeau FR minimal */
-function FlagFr() {
+/* Logo Made in France */
+function MifLogo() {
   return (
-    <span aria-hidden className="flex h-5 w-7 overflow-hidden rounded-sm border border-zinc-700">
-      <span className="flex-1 bg-blue-600" />
-      <span className="flex-1 bg-white" />
-      <span className="flex-1 bg-red-600" />
-    </span>
+    <Image
+      src="/logos-icons/mif.webp"
+      alt="Made in France"
+      width={20}
+      height={20}
+      className="h-5 w-5 object-contain"
+    />
   );
 }
 
@@ -32,7 +35,7 @@ function LeafIcon() {
 
 export default function Advantages() {
   const items = [
-    { icon: FlagFr, label: "Fabriquée en France" },
+    { icon: MifLogo, label: "Fabriquée en France" },
     { icon: ShieldCheck, label: "Cadre en carbone forgé", color: "text-blue-500" },
     { icon: LeafIcon, label: "Carbone recyclé et résine biosourcée" },
     { icon: Wrench, label: "Tamis remplaçable", color: "text-gray-200" },

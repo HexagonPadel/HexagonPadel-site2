@@ -7,6 +7,8 @@ import PhotoCarousel from "./components/accueil/PhotoCarousel";
 
 import Configurateur from "./components/accueil/Configurateur";
 import TechnicalSpecs from "./components/accueil/Configurateur/TechnicalSpecs";
+import Notoriete from "./components/accueil/Notoriete";
+import Faq from "./components/accueil/Faq";
 import PictosPropValeur from "./components/accueil/PictosPropValeur";
 import PrecommandeEmail from "./components/accueil/PrecommandeEmail";
 import ModelesPhares from "./components/accueil/ModelesPhares";
@@ -34,12 +36,14 @@ export default function Home() {
      <PictosPropValeur />
       <PhotoCarousel />
 
+
       {/* Ancre du configurateur */}
       <div ref={configurateurRef}>
         <Configurateur />
       </div>
       <TechnicalSpecs />
-
+      <Notoriete />
+      {/*<Faq />*/}
       {/* Ancre de la section précommande */}
       <div id="precommandeemail" ref={precommandeRef}  className="scroll-mt-[100px]">
         <PrecommandeEmail />
