@@ -5,11 +5,11 @@ import Link from 'next/link';
 
 export default function Notoriete() {
   const logos = [
-    { src: '/Presse/logo1.webp', alt: 'Les Echos', href: 'https://www.lesechos.fr/pme-regions/pays-de-la-loire/hexagon-padel-la-premiere-raquette-made-in-france-a-lhorizon-2196074' },
-    { src: '/Presse/logo2.webp', alt: 'Ouest France 2', href: 'https://www.ouest-france.fr/pays-de-la-loire/clisson-44190/les-raquettes-de-padel-francaises-sont-de-clisson-10e8ec34-d29f-11ef-a472-523f8d5502d1' },
-    { src: '/Presse/logo3.webp', alt: 'Api News', href: 'https://agence-api.ouest-france.fr/pays-de-la-loire/loire-atlantique/plasturgie-hexagon-padel-une-raquette-made-in-france-en-carbone-recycle-17e81b7a-8dc0-4998-a26b-122edd5c6b5a' },
-    { src: '/Presse/logo4.webp', alt: 'Kivo', href: 'https://incubateur-kivo.fr/startups/hexagon-padel/' },
-    { src: '/Presse/logo5.webp', alt: 'Sport-Padel', href: 'https://www.sport-padel.fr/hexagon-padel-linnovation-francaise-raquettes-de-padel-5151' },
+    { src: '/presse/logo1.webp', alt: 'Les Echos', href: 'https://www.lesechos.fr/pme-regions/pays-de-la-loire/hexagon-padel-la-premiere-raquette-made-in-france-a-lhorizon-2196074' },
+    { src: '/presse/logo2.webp', alt: 'Ouest France 2', href: 'https://www.ouest-france.fr/pays-de-la-loire/clisson-44190/les-raquettes-de-padel-francaises-sont-de-clisson-10e8ec34-d29f-11ef-a472-523f8d5502d1' },
+    { src: '/presse/logo3.webp', alt: 'Api News', href: 'https://agence-api.ouest-france.fr/pays-de-la-loire/loire-atlantique/plasturgie-hexagon-padel-une-raquette-made-in-france-en-carbone-recycle-17e81b7a-8dc0-4998-a26b-122edd5c6b5a' },
+    { src: '/presse/logo4.webp', alt: 'Kivo', href: 'https://incubateur-kivo.fr/startups/hexagon-padel/' },
+    { src: '/presse/logo5.webp', alt: 'Sport-Padel', href: 'https://www.sport-padel.fr/hexagon-padel-linnovation-francaise-raquettes-de-padel-5151' },
   ];
 
   return (
