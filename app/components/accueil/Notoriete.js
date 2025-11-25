@@ -10,6 +10,8 @@ export default function Notoriete() {
     { src: '/presse/logo3.webp', alt: 'Api News', href: 'https://agence-api.ouest-france.fr/pays-de-la-loire/loire-atlantique/plasturgie-hexagon-padel-une-raquette-made-in-france-en-carbone-recycle-17e81b7a-8dc0-4998-a26b-122edd5c6b5a' },
     { src: '/presse/logo4.webp', alt: 'Kivo', href: 'https://incubateur-kivo.fr/startups/hexagon-padel/' },
     { src: '/presse/logo5.webp', alt: 'Sport-Padel', href: 'https://www.sport-padel.fr/hexagon-padel-linnovation-francaise-raquettes-de-padel-5151' },
+    { src: '/presse/logo6.webp', alt: 'IJ', href: 'https://www.informateurjudiciaire.fr/actualites/raquettes-made-in-l-a-le-smash-ecoresponsable-dhexagon-padel' },
+    { src: '/presse/logo7.webp', alt: 'Usine Nouvelle', href: 'https://www.usinenouvelle.com/article/padel-un-bout-d-a320-dans-votre-raquette-la-start-up-nantaise-hexagon-padel-recycle-les-materiaux-aeronautiques.N2241541' },
   ];
 
   return (
@@ -20,7 +22,7 @@ export default function Notoriete() {
         </div>
 
         <ul
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4 md:gap-6"
           role="list"
         >
           {logos.map((logo, i) => (
