@@ -828,3 +828,139 @@ body {
 .product-link:hover {
     gap: 0.5rem;
 }
+/* ============================
+   BOUTON ACTION GLOBAL (CSS pur)
+   ============================ */
+
+   .btn-action {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  
+    /* forme */
+    border-radius: 9999px;                         /* rounded-full */
+  
+    /* contour bien visible */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  
+    /* taille */
+    padding: 0.75rem 2rem;                         /* py-3 px-8 */
+  
+    /* typo */
+    font-size: 0.875rem;                           /* text-sm */
+    font-weight: 600;                              /* font-semibold */
+    letter-spacing: 0.06em;                        /* tracking-wide approx */
+    color: #ffffff;
+  
+    /* fond carbone statique directement sur le bouton */
+    background: radial-gradient(
+      circle at 20% 0%,
+      #1f2937 0%,
+      #020617 45%,
+      #000000 100%
+    );
+  
+    /* ombre */
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+  
+    cursor: pointer;
+    transform: translateZ(0);
+    transition: transform 0.3s ease;
+  }
+  
+
+  /* Halo lumineux animé (source qui arrive, tourne, repart) */
+  .btn-action::after {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+    pointer-events: none;
+  
+    width: 260%;
+    height: 260%;
+    top: -160%;
+    left: -130%;
+  
+    background: radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 255, 255, 0.4) 18%,
+      rgba(148, 163, 184, 0.25) 32%,
+      rgba(15, 23, 42, 0) 55%
+    );
+  
+    mix-blend-mode: screen;
+    filter: blur(6px);
+    opacity: 0;
+  
+    animation: hpLightArc 5s linear infinite;
+  }
+  
+  /* Contenu du bouton */
+  .btn-action__text {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.3s ease;
+  }
+  
+  /* Hover : zoom léger du texte */
+  .btn-action:hover .btn-action__text {
+    transform: scale(1.05);
+  }
+    /* Variante FLAT : pas d'ombre, pas de soulèvement */
+.btn-action--flat {
+    box-shadow: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.15); /* teinte plus neutre que le Hero */
+    background: radial-gradient(
+      circle at 20% 0%,
+      #1f2937 0%,
+      #020617 40%,
+      #0a0a0a 100%
+    );
+  }
+  
+  /* Light effect est gardé, animation OK */
+  .btn-action--flat::after {
+    mix-blend-mode: screen;
+  }
+
+  /* ============================
+     ANIMATION ARC LUMINEUX
+     ============================ */
+  
+     @keyframes hpLightArc {
+        /* Lumière loin → bouton statique */
+        0% {
+          opacity: 0;
+          transform: translate(40%, 0%);
+        }
+      
+        /* Douce approche (symétrique avec la sortie) */
+        20% {
+          opacity: 0.65;
+          transform: translate(25%, -6%);
+        }
+      
+        /* Traversée au-dessus du bouton */
+        50% {
+          opacity: 0.75;
+          transform: translate(-10%, -10%);
+        }
+      
+        /* Retraite (symétrique avec l'approche) */
+        70% {
+          opacity: 0;
+          transform: translate(-35%, -4%);
+        }
+      
+        /* Pause complète, on revient à zéro */
+        100% {
+          opacity: 0;
+          transform: translate(40%, 0%);
+        }
+      }

@@ -101,13 +101,19 @@ Couleur     : ${config.accentColor ? colorName(config.accentColor) : "—"}`,
           className="px-3 py-2 rounded-md border border-neutral-300 focus:outline-none focus:border-black w-full sm:w-auto"
           required
         />
+
+        {/* -------------------------------------- */}
+        {/* Bouton ACTION premium                  */}
+        {/* -------------------------------------- */}
         <button
-          type="submit"
-          disabled={isSubmitting}
-          className="sm:ml-3 w-full sm:w-auto rounded-md bg-copper-light text-white px-4 py-2 font-medium hover:bg-neutral-800 disabled:opacity-60"
-        >
-          {isSubmitting ? "Envoi…" : "Je veux cette raquette"}
-        </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="btn-action btn-action--flat sm:ml-3 w-full sm:w-auto"
+>
+  <span className="btn-action__text">
+    {isSubmitting ? "Envoi…" : "Je veux cette raquette"}
+  </span>
+</button>
       </form>
 
       <p className="mt-2 text-xs text-neutral-500 text-center sm:text-left">
