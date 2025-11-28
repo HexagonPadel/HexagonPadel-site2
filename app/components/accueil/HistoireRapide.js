@@ -1,62 +1,77 @@
-"use client"
+"use client";
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { motion } from 'framer-motion'
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
-export default function EcoResponsable() {
+export default function Histoire() {
   return (
-    <>
-      {/* === SECTION HISTOIRE === */}
-      <section className="bg-slate-50 py-24">
-        <div className="max-w-6xl mx-auto px-6 md:flex md:items-center md:gap-12">
+    <section className="section section-bright">
+      <div className="section-inner">
 
-          {/* === IMAGE (desktop + mobile) === */}
-          <motion.div 
-            className="md:w-1/2 flex justify-center"
-            initial={{ opacity: 0, y: 40 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+        {/* === TITRE & SOUS-TITRE (standard sections) === */}
+        <div className="max-w-3xl mb-8 md:mb-12">
+          <h2 className="section-title">Notre histoire</h2>
+          <p className="section-subtitle">
+            Un projet né près de Nantes, mêlant innovation, artisanat et écoresponsabilité.
+          </p>
+        </div>
+
+        {/* === LAYOUT 2 COLONNES === */}
+        <div className="section-layout-split gap-10 md:gap-16">
+
+          {/* === IMAGE === */}
+          <motion.div
+            className="w-full flex justify-center"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
             viewport={{ once: true }}
           >
-            <div className="w-full max-w-[400px] aspect-square">
+            <div className="w-full max-w-[420px] aspect-square overflow-hidden rounded-2xl">
               <Image
                 src="/gui-debut.png"
                 alt="Fondateur Hexagon Padel"
-                width={500}
-                height={500}
+                width={600}
+                height={600}
                 className="object-cover w-full h-full"
               />
             </div>
           </motion.div>
 
-          {/* === TEXTE (desktop + mobile) === */}
-          <motion.div 
-            className="md:w-1/2 flex items-center"
-            initial={{ opacity: 0, y: 40 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
+          {/* === TEXTE === */}
+          <motion.div
+            className="flex items-center w-full"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <div className="mt-6 md:mt-0">
-              <h2 className="text-3xl font-bold mb-6">Notre Histoire</h2>
-              <p className="text text-graphite-dark mb-6">
-                Fondé avec passion dans notre atelier à Clisson en Loire-Atlantique, Hexagon Padel représente l&apos;alliance parfaite entre savoir-faire artisanal et innovation technologique.
+            <div>
+              <p className="section-paragraph text-graphite-dark">
+                Fondé avec passion dans notre atelier à Clisson en Loire-Atlantique, Hexagon Padel
+                représente l&apos;alliance entre savoir-faire artisanal et innovation technologique.
               </p>
-              <p className="text text-graphite-dark mb-6">
-                Notre engagement local va de pair avec notre vision globale : créer des raquettes éco-conçues qui changent les règles du jeu grâce à des matériaux recyclés et des technologies brevetées comme notre tamis remplaçable.
+
+              <p className="section-paragraph text-graphite-dark">
+                Notre engagement local va de pair avec notre vision globale : créer des raquettes
+                éco-conçues qui changent les règles du jeu grâce à des matériaux recyclés et des
+                technologies brevetées comme notre tamis remplaçable.
               </p>
-              <p className="text text-graphite-dark mb-6">
-                Chaque raquette est le fruit d&apos;un processus rigoureux, combinant les exigences de la haute performance sportive avec une démarche environnementale responsable.
+
+              <p className="section-paragraph text-graphite-dark">
+                Chaque raquette est le fruit d&apos;un processus rigoureux, combinant haute performance
+                sportive et démarche environnementale responsable.
               </p>
-              <Link href="/histoire" className="btn-hero">
+
+              <Link href="/histoire" className="btn-action btn-action--flat">
                 Découvrir notre histoire
               </Link>
             </div>
           </motion.div>
 
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

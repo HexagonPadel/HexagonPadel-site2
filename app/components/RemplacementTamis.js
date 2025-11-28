@@ -53,12 +53,12 @@ export default function RemplacementTamis() {
               Notre service de remplacement de tamis vous permet de conserver votre raquette préférée 
               tout en lui donnant un nouveau look ou en optimisant ses performances.
             </p>
-            <span className="inline-flex items-center text-accent font-medium text-base mb-6">
-              Changez de style. Restez fidèle à votre raquette.
+            <span className="inline-flex items-center text-blue-electric font-medium text-base mb-6">
+              Restez fidèle à votre raquette.
             </span>
           </div>
 
-          <h3 className="text-2xl font-serif text-center mb-10">Comment ça fonctionne</h3>
+          <h3 className="text-2xl font-serif text-center mb-10">Comment ça fonctionne ?</h3>
 
           <div className="grid grid-cols-2 gap-4">
             {steps.map(({ step, title, description }) => (
@@ -79,7 +79,7 @@ export default function RemplacementTamis() {
               Ce service exclusif témoigne de notre engagement pour la durabilité et notre volonté 
               de vous offrir une expérience premium tout au long de la vie de votre raquette.
             </p>
-            <a href="/engagements" className="btn-hero">
+            <a href="/engagements" className="btn-action btn-action--flat">
               En savoir plus sur notre démarche
             </a>
           </div>
@@ -106,15 +106,15 @@ export default function RemplacementTamis() {
                 tout en lui donnant un nouveau look ou en optimisant ses performances.
               </p>
               <div className="flex justify-center">
-                <span className="inline-flex items-center text-accent font-medium text-xl mb-4">
-                  Changez de style. Restez fidèle à votre raquette.
+                <span className="inline-flex items-center text-blue-electric font-medium text-xl mb-4">
+                  Restez fidèle à votre raquette.
                 </span>
               </div>
             </div>
           </div>
 
           <div className="fade-in mb-4">
-            <h3 className="text-2xl font-serif text-center mb-10">Comment ça fonctionne</h3>
+            <h3 className="text-2xl font-serif text-center mb-10">Comment ça fonctionne ?</h3>
             <div className="how-it-works-grid">
               {steps.map(({ step, title, description }) => (
                 <div key={step} className="how-it-works-card hover-lift">
@@ -135,7 +135,7 @@ export default function RemplacementTamis() {
               Ce service exclusif témoigne de notre engagement pour la durabilité et notre volonté 
               de vous offrir une expérience premium tout au long de la vie de votre raquette.
             </p>
-            <a href="/engagements" className="btn-hero">
+            <a href="/engagements" className="btn-action btn-action--flat">
               En savoir plus sur notre démarche
             </a>
           </div>

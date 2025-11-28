@@ -15,12 +15,15 @@ export default function Notoriete() {
   ];
 
   return (
-    <section aria-labelledby="notoriete-title" className="w-full py-10 md:py-14">
-      <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="text-3xl font-bold mb-6">
-          <h2>Ils parlent de nous</h2>
-        </div>
+    <section aria-labelledby="notoriete-title" className="section section-bright">
+      <div className="section-inner">
 
+        {/* Titre standardisé */}
+        <h2 id="notoriete-title" className="section-title mb-6">
+          Ils parlent de nous
+        </h2>
+
+        {/* Grille de logos */}
         <ul
           className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-4 md:gap-6"
           role="list"
@@ -60,6 +63,7 @@ export default function Notoriete() {
             </li>
           ))}
         </ul>
+
       </div>
     </section>
   );

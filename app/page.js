@@ -20,7 +20,7 @@ import "../app/globals.css";
 import RemplacementTamis from "./components/RemplacementTamis";
 import Explications from "./components/Explications";
 import HistoireRapide from "./components/accueil/HistoireRapide";
-
+import Lamborghini from "./components/Lamborghini";
 
 export default function Home() {
   const configurateurRef = useRef(null);
@@ -66,6 +66,7 @@ export default function Home() {
 </section>
 
       <Explications />
+      <Lamborghini />
       <EcoResponsable />
       <RemplacementTamis />
       <HistoireRapide />

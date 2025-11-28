@@ -80,7 +80,9 @@ function PreviewGallery({ items = [] }) {
 
   useEffect(() => {
     setIdx(0);
-    setZoom(1); setTx(0); setTy(0);
+    setZoom(1);
+    setTx(0);
+    setTy(0);
   }, [items]);
 
   if (!items.length) {
@@ -93,20 +95,29 @@ function PreviewGallery({ items = [] }) {
     );
   }
 
-  // clamp d’index
   const safeIdx = Math.max(0, Math.min(idx, items.length - 1));
   const current = items[safeIdx];
 
-  const prev = () => { setIdx((i) => (i + items.length - 1) % items.length); resetZoom(); };
-  const next = () => { setIdx((i) => (i + 1) % items.length); resetZoom(); };
+  const prev = () => {
+    setIdx((i) => (i + items.length - 1) % items.length);
+    resetZoom();
+  };
+  const next = () => {
+    setIdx((i) => (i + 1) % items.length);
+    resetZoom();
+  };
 
-  const resetZoom = () => { setZoom(1); setTx(0); setTy(0); };
+  const resetZoom = () => {
+    setZoom(1);
+    setTx(0);
+    setTy(0);
+  };
 
   const clampPan = (nx, ny) => {
     const r = containerRef.current?.getBoundingClientRect();
     if (!r) return { x: 0, y: 0 };
-    const maxX = (zoom - 1) * r.width / 2;
-    const maxY = (zoom - 1) * r.height / 2;
+    const maxX = ((zoom - 1) * r.width) / 2;
+    const maxY = ((zoom - 1) * r.height) / 2;
     return {
       x: Math.max(-maxX, Math.min(maxX, nx)),
       y: Math.max(-maxY, Math.min(maxY, ny)),
@@ -114,7 +125,10 @@ function PreviewGallery({ items = [] }) {
   };
 
   const handleClick = (e) => {
-    if (moved) { setMoved(false); return; }
+    if (moved) {
+      setMoved(false);
+      return;
+    }
     const r = containerRef.current?.getBoundingClientRect();
     if (!r) return;
 
@@ -146,7 +160,11 @@ function PreviewGallery({ items = [] }) {
     if (!dragging || zoom === 1) return;
     const dx = e.clientX - start.x;
     const dy = e.clientY - start.y;
-    if (!moved && (Math.abs(e.clientX - pressXY.x) > 3 || Math.abs(e.clientY - pressXY.y) > 3)) {
+    if (
+      !moved &&
+      (Math.abs(e.clientX - pressXY.x) > 3 ||
+        Math.abs(e.clientY - pressXY.y) > 3)
+    ) {
       setMoved(true);
     }
     const { x, y } = clampPan(start.tx0 + dx, start.ty0 + dy);
@@ -160,7 +178,8 @@ function PreviewGallery({ items = [] }) {
     if (zoom === 1) return;
     e.preventDefault();
     const { x, y } = clampPan(tx - e.deltaX, ty - e.deltaY);
-    setTx(x); setTy(y);
+    setTx(x);
+    setTy(y);
   };
 
   const mediaTransform = `translate(${tx}px, ${ty}px) scale(${zoom})`;
@@ -190,19 +209,29 @@ function PreviewGallery({ items = [] }) {
             src={current.src}
             alt={current.alt}
             className="h-full w-full object-cover will-change-transform"
-            style={{ transform: mediaTransform, transformOrigin: "center center", transition: dragging ? "none" : "transform 120ms ease" }}
+            style={{
+              transform: mediaTransform,
+              transformOrigin: "center center",
+              transition: dragging ? "none" : "transform 120ms ease",
+            }}
             draggable={false}
           />
         ) : (
           <video
             key={current.src}
             className="h-full w-full object-cover will-change-transform"
-            style={{ transform: mediaTransform, transformOrigin: "center center", transition: dragging ? "none" : "transform 120ms ease" }}
+            style={{
+              transform: mediaTransform,
+              transformOrigin: "center center",
+              transition: dragging ? "none" : "transform 120ms ease",
+            }}
             muted
             loop
             playsInline
             autoPlay
-            onError={(e) => console.error("main video error:", current.src, e)}
+            onError={(e) =>
+              console.error("main video error:", current.src, e)
+            }
           >
             <source src={current.src} />
           </video>
@@ -210,7 +239,10 @@ function PreviewGallery({ items = [] }) {
 
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); prev(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            prev();
+          }}
           onMouseDown={(e) => e.stopPropagation()}
           aria-label="Précédent"
           className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
@@ -220,7 +252,10 @@ function PreviewGallery({ items = [] }) {
 
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); next(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            next();
+          }}
           onMouseDown={(e) => e.stopPropagation()}
           aria-label="Suivant"
           className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 hover:bg-white px-3 py-2 shadow border text-slate-700"
@@ -235,14 +270,19 @@ function PreviewGallery({ items = [] }) {
 
       <div
         className="mt-3 grid gap-2"
-        style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+        style={{
+          gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))`,
+        }}
       >
         {items.map((it, i) => (
           <ThumbItem
             key={`${it.type}-${it.src}`}
             item={it}
             active={i === safeIdx}
-            onClick={() => { setIdx(i); resetZoom(); }}
+            onClick={() => {
+              setIdx(i);
+              resetZoom();
+            }}
           />
         ))}
       </div>
@@ -271,29 +311,39 @@ export default function ConfigurateurDesktop({
   isDecorationAllowed,
   handleSurfaceClick,
 }) {
+  const [isSignatureOpen, setIsSignatureOpen] = useState(false);
+
+  const openSignature = () => setIsSignatureOpen(true);
+  const closeSignature = () => setIsSignatureOpen(false);
+
   return (
-    <section className="py-10 bg-slate-50 mx-8 mb-8">
-      <div className="max-w-6xl mx-auto px-4 mb-6">
-        <h2 className="text-3xl font-bold mb-2">Configurez votre propre raquette</h2>
-        <p className="text-gray-600 max-w-xl">
-          Personnalisez votre raquette en fonction de votre type de jeu et votre style
+    <section className="section section-bright">
+      {/* Titre + sous-titre en format standardisé */}
+      <div className="section-inner mb-6">
+        <h2 className="section-title">
+          Configurez votre propre raquette
+        </h2>
+        <p className="section-subtitle">
+          Personnalisez votre raquette en fonction de votre type de jeu et de votre style.
         </p>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4">
+      {/* Contenu principal (grid preview + options) */}
+      <div className="section-inner">
         <div className="grid gap-8 lg:grid-cols-2">
           {/* COLONNE GAUCHE : PRÉVISUALISATION */}
           <aside
             className="col-span-1 sticky"
             style={{ top: "100px", height: "85vh" }}
           >
-            <div className="h-full w-full rounded-3xl border border-slate-200 bg-white shadow-sm p-4 ">
+            <div className="h-full w-full rounded-3xl border border-slate-200 bg-white shadow-sm p-4">
               <PreviewGallery items={previewItems} />
             </div>
 
             <p className="mb-2 text-xs italic text-slate-500">
-              En raison de la diversité des combinaisons, certains rendus affichés sont à titre illustratif.
-              Chaque raquette fabriquée reprend les mêmes nuances, reflets et textures que celles présentées.
+              En raison de la diversité des combinaisons, certains rendus affichés sont à titre
+              illustratif. Chaque raquette fabriquée reprend les mêmes nuances, reflets et textures
+              que celles présentées.
             </p>
           </aside>
 
@@ -307,7 +357,8 @@ export default function ConfigurateurDesktop({
                     Performance
                   </h3>
                   <p className="mt-1 text-xs leading-snug text-slate-600">
-                    Choisissez votre type de jeu : nous fabriquons votre raquette avec les meilleurs matériaux pour s&#39;y adapter naturellement.
+                    Choisissez votre type de jeu : nous fabriquons votre raquette avec les meilleurs
+                    matériaux pour s&apos;y adapter naturellement.
                   </p>
                 </div>
 
@@ -338,7 +389,9 @@ export default function ConfigurateurDesktop({
                             <span
                               className={[
                                 "text-[13px] leading-tight",
-                                selected ? "font-semibold text-slate-900" : "text-slate-800",
+                                selected
+                                  ? "font-semibold text-slate-900"
+                                  : "text-slate-800",
                               ].join(" ")}
                             >
                               {s.label}
@@ -368,7 +421,9 @@ export default function ConfigurateurDesktop({
                         const stateClass = selected
                           ? "border-amber-500 ring-1 ring-amber-400 bg-amber-50 -translate-y-0.5 shadow-md"
                           : "border-slate-200 bg-white";
-                        const hoverClass = selected ? "" : "hover:-translate-y-0.5 hover:shadow-md";
+                        const hoverClass = selected
+                          ? ""
+                          : "hover:-translate-y-0.5 hover:shadow-md";
                         const greyClass = allowed ? "" : "opacity-40 grayscale";
 
                         return (
@@ -414,12 +469,13 @@ export default function ConfigurateurDesktop({
 
               {/* SECTION ESTHÉTIQUE */}
               <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div className="px-4 py-2 ">
+                <div className="px-4 py-2">
                   <h3 className="text-m font-semibold uppercase tracking-wide text-slate-700">
                     Esthétique
                   </h3>
                   <p className="mt-1 text-xs leading-snug text-slate-600">
-                    Personnalisez l&#39;apparence de votre raquette en choisissant les couleurs et finitions qui vous ressemblent
+                    Personnalisez l&apos;apparence de votre raquette en choisissant
+                    les couleurs et finitions qui vous ressemblent.
                   </p>
                 </div>
 
@@ -433,15 +489,20 @@ export default function ConfigurateurDesktop({
                       </h3>
 
                       <div className="flex-1 flex items-center justify-end gap-2 flex-nowrap">
-                        {FINISH_TABS.map(tab => {
-                          const isDisabled = tab.id !== "brut" && !isDecorationAllowed;
+                        {FINISH_TABS.map((tab) => {
+                          const isDisabled =
+                            tab.id !== "brut" && !isDecorationAllowed;
                           const isSelected = finish === tab.id;
 
                           return (
                             <div key={tab.id} className="relative group">
                               <button
-                                onClick={() => isDecorationAllowed && setFinish(tab.id)}
-                                className={`shrink-0 inline-flex items-center justify-center rounded-full border ${tabBtnTightClass(tab.id)} text-[10px] leading-tight text-center ${
+                                onClick={() =>
+                                  isDecorationAllowed && setFinish(tab.id)
+                                }
+                                className={`shrink-0 inline-flex items-center justify-center rounded-full border ${tabBtnTightClass(
+                                  tab.id
+                                )} text-[10px] leading-tight text-center ${
                                   isSelected
                                     ? "bg-amber-100 border-amber-300 font-semibold"
                                     : isDisabled
@@ -450,13 +511,16 @@ export default function ConfigurateurDesktop({
                                 }`}
                                 aria-pressed={isSelected}
                               >
-                                <span className="leading-tight">{tab.label}</span>
+                                <span className="leading-tight">
+                                  {tab.label}
+                                </span>
                               </button>
 
                               {isDisabled && (
                                 <div className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 translate-y-1 group-hover:block">
                                   <div className="mt-2 max-w-[240px] rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] text-slate-700 shadow whitespace-nowrap">
-                                    Décoration non compatible avec cette surface de frappe
+                                    Décoration non compatible avec cette surface
+                                    de frappe
                                   </div>
                                 </div>
                               )}
@@ -474,26 +538,41 @@ export default function ConfigurateurDesktop({
                           const isDisabled = !isDecorationAllowed;
 
                           return (
-                            <div key={`${finish}-${c.id}`} className="relative group">
+                            <div
+                              key={`${finish}-${c.id}`}
+                              className="relative group"
+                            >
                               <button
-                                onClick={() => isDecorationAllowed && setAccentColor(c.id)}
+                                onClick={() =>
+                                  isDecorationAllowed && setAccentColor(c.id)
+                                }
                                 className={`shrink-0 flex flex-col items-center gap-1 text-[11px] ${
-                                  isDisabled ? "cursor-not-allowed opacity-40 grayscale" : "cursor-pointer"
+                                  isDisabled
+                                    ? "cursor-not-allowed opacity-40 grayscale"
+                                    : "cursor-pointer"
                                 }`}
                                 aria-pressed={selected}
                               >
-                                <div className={`relative w-24 aspect-square overflow-hidden rounded-md ${
-                                  selected ? "ring-2 ring-amber-500" : ""
-                                }`}>
+                                <div
+                                  className={`relative w-24 aspect-square overflow-hidden rounded-md ${
+                                    selected ? "ring-2 ring-amber-500" : ""
+                                  }`}
+                                >
                                   <img
                                     src={imgSrc}
                                     alt={`Aperçu ${finish} — ${c.name}`}
                                     className="absolute inset-0 h-full w-full object-cover"
                                   />
                                 </div>
-                                <span className={`w-24 text-center truncate ${
-                                  selected ? "font-semibold" : ""
-                                } ${isDisabled ? "text-slate-400" : "text-slate-700"}`}>
+                                <span
+                                  className={`w-24 text-center truncate ${
+                                    selected ? "font-semibold" : ""
+                                  } ${
+                                    isDisabled
+                                      ? "text-slate-400"
+                                      : "text-slate-700"
+                                  }`}
+                                >
                                   {c.name}
                                 </span>
                               </button>
@@ -501,7 +580,8 @@ export default function ConfigurateurDesktop({
                               {isDisabled && (
                                 <div className="pointer-events-none absolute left-1/2 top-full z-10 hidden -translate-x-1/2 translate-y-1 group-hover:block">
                                   <div className="mt-2 max-w-[240px] rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] text-slate-700 shadow">
-                                    La décoration de couleur n&#39;est pas compatible avec cette surface de frappe
+                                    La décoration de couleur n&apos;est pas
+                                    compatible avec cette surface de frappe
                                   </div>
                                 </div>
                               )}
@@ -549,7 +629,10 @@ export default function ConfigurateurDesktop({
                       <div className="flex items-center gap-3">
                         <input
                           value={engraving}
-                          onChange={(e) => e.target.value.length <= 20 && setEngraving(e.target.value)}
+                          onChange={(e) =>
+                            e.target.value.length <= 20 &&
+                            setEngraving(e.target.value)
+                          }
                           placeholder="Texte (max. 20)"
                           className="w-56 rounded-lg border border-slate-300 bg-white px-3 py-2 text-[12px] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
                           aria-label="Texte de gravure"
@@ -559,12 +642,31 @@ export default function ConfigurateurDesktop({
                         </span>
                       </div>
                     </div>
+
+                    {/* Vignette cliquable : signature recadrée */}
+                    <div className="mt-1">
+                      <button
+                        type="button"
+                        onClick={openSignature}
+                        className="group inline-flex"
+                        aria-label="Voir la gravure de signature sur le cadre"
+                      >
+                        <div className="relative w-80 h-[70px] overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                          <img
+                            src="/photos/SignatureFrame.webp"
+                            alt="Gravure de signature sur le cadre"
+                            className="w-full h-full object-cover object-center transition-transform duration-200 group-hover:scale-105"
+                          />
+                        </div>
+                      </button>
+                    </div>
                   </section>
                 </div>
               </div>
 
               <p className="text-xs italic text-slate-500">
-                Si vous souhaitez une décoration non disponible dans le configurateur,&nbsp;demandez-la nous{" "}
+                Si vous souhaitez une décoration non disponible dans le
+                configurateur,&nbsp;demandez-la nous{" "}
                 <a
                   href="/contact"
                   className="font-semibold italic border-b border-slate-500 pb-[1px] hover:text-sky-600 hover:border-sky-600 transition-colors"
@@ -574,23 +676,52 @@ export default function ConfigurateurDesktop({
                 &nbsp;!
               </p>
 
-{/* === Section d’intérêt configurateur === */}
-<ConfigurateurInterest
-  config={{
-    styleJeu,
-    surface,
-    accentColor,
-    finish,
-    logoColor,
-    engraving,
-  }}
-/>
+              {/* === Section d’intérêt configurateur === */}
+              <ConfigurateurInterest
+                config={{
+                  styleJeu,
+                  surface,
+                  accentColor,
+                  finish,
+                  logoColor,
+                  engraving,
+                }}
+              />
 
               <div className="flex-1" />
             </div>
           </div>
         </div>
       </div>
+
+      {/* POPUP SIGNATURE */}
+      {isSignatureOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+          onClick={closeSignature}
+        >
+          <div
+            className="relative max-w-3xl w-[90vw] max-h-[85vh] rounded-2xl bg-black/90 p-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={closeSignature}
+              aria-label="Fermer l'aperçu de la signature"
+              className="absolute right-3 top-3 rounded-full bg-white/90 text-slate-900 w-7 h-7 flex items-center justify-center text-sm hover:bg-white"
+            >
+              ✕
+            </button>
+            <div className="relative w-full h-full">
+              <img
+                src="/photos/SignatureFrame.webp"
+                alt="Gravure de signature sur le cadre"
+                className="w-full h-auto max-h-[75vh] object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

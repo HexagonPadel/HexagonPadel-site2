@@ -65,7 +65,7 @@ export default function Hero({ onScrollToConfigurator }) {
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
           className="mb-6 max-w-xl text-[clamp(1rem,2vw,1.25rem)] opacity-80"
         >
-          Fabrication française, tamis remplaçable, matériaux recyclés
+          Fabrication 100% française, tamis remplaçable, matériaux recyclés
         </motion.p>
 
         {/* Bouton Hero type "action" réutilisable */}

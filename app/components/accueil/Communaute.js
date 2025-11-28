@@ -55,8 +55,8 @@ export default function Communaute() {
             className="px-4 py-2 mr-0 sm:mr-4 rounded-sm bg-transparent text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:border-white w-full sm:w-auto"
             required
           />
-          <button type="submit" disabled={isSubmitting} className="btn-hero disabled:opacity-60">
-            {isSubmitting ? 'Envoi…' : "S'inscrire"}
+          <button type="submit" disabled={isSubmitting} className="btn-action  disabled:opacity-60">
+            {isSubmitting ? 'Envoi…' : "M'inscrire"}
           </button>
         </form>
 

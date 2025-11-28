@@ -964,3 +964,77 @@ body {
           transform: translate(40%, 0%);
         }
       }
+
+
+ /* ============================================
+   SECTIONS / BUILDING BLOCKS — VERSION MINIMALE
+   ============================================ */
+
+/* Section pleine largeur avec padding vertical standard */
+.section {
+    width: 100%;
+    padding-top: 4rem;   /* ~ pt-16 */
+    padding-bottom: 4rem;
+  }
+  
+  /* Deux variantes de fond seulement */
+  .section-bright {
+    background-color: #fefefd;
+    color: #111;
+  }
+  
+  .section--dark {
+    background-color: #2A2A2A;
+    color: #fff;
+  }
+  
+  /* Conteneur interne centré */
+  .section-inner {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Layout 2 colonnes (image + texte) */
+  .section-layout-split {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  @media (min-width: 768px) {
+    .section-layout-split {
+      flex-direction: row;
+      align-items: center;
+    }
+  
+    /* Les deux colonnes prennent 50% */
+    .section-layout-split > * {
+      flex: 1;
+    }
+  }
+  
+  /* Titre standard */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  /* Sous-titre standard */
+  .section-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  /* Paragraphe standard des sections */
+.section-paragraph {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;   /* équivalent text-sm */
+    line-height: 1.6;
+    margin-bottom: 1.35rem; /* spacing optimisé pour lecture */
+  }
