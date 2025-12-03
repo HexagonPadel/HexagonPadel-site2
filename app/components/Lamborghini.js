@@ -23,7 +23,7 @@ export default function Lamborghini() {
           <div>
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/40">
               <Image
-                src="/Photos/lamborghini.webp"
+                src="/photos/lamborghini.webp"
                 alt="Carbone forgé des supercars Lamborghini"
                 width={960}
                 height={640}
