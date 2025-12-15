@@ -35,7 +35,7 @@ function LeafIcon() {
 
 export default function Advantages() {
   const items = [
-    { icon: MifLogo, label: "Fabriquée en France au sud de Nantes" },
+    { icon: MifLogo, label: "Fabriquée en France près de Nantes" },
     { icon: ShieldCheck, label: "Cadre monobloc en carbone forgé", color: "text-blue-500" },
     { icon: LeafIcon, label: "Fibre de carbone recyclée et résine biosourcée" },
     { icon: Wrench, label: "Tamis remplaçable", color: "text-gray-200" },
